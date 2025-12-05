@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card" style="display: block; text-align: center; padding: 3rem;">
+    <h2 style="margin-bottom: 1rem;">Confirmar Exclusão</h2>
+    <p style="margin-bottom: 2rem; color: var(--text-secondary);">
+        Tem certeza que deseja excluir o projeto <strong>"{{ object.title }}"</strong>? Esta ação não pode ser desfeita.
+    </p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn-primary" style="background: #ef4444;">Sim, Excluir</button>
+        <a href="{% url 'post_detail' object.pk %}" class="btn-primary" style="background: #3f3f46; margin-left: 1rem;">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

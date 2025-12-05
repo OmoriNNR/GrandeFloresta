@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<article class="card" style="display: block;">
+    <div style="margin-bottom: 1.5rem;">
+        <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">{{ post.title }}</h2>
+        <div class="card-meta">
+            <span>Publicado em {{ post.created_at|date:"d F Y" }}</span>
+            <span>
+                Categorias: 
+                {% for cat in post.categories.all %}
+                    <a href="{% url 'category_detail' cat.pk %}" style="color: var(--accent);">{{ cat.name }}</a>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </span>
+        </div>
+    </div>
+
+    <div style="line-height: 1.8; color: var(--text-secondary); margin-bottom: 2rem;">
+        {{ post.content|safe }}
+    </div>
+
+    <div class="actions" style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+        <a href="{% url 'post_update' post.pk %}" class="btn-primary" style="background: #3f3f46;">Editar</a>
+        <a href="{% url 'post_delete' post.pk %}" class="btn-primary" style="background: #ef4444;">Excluir</a>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.05); margin-bottom: 2rem;">
+
+    <h3>Comentários ({{ comments.count }})</h3>
+    
+    <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+        {% for comment in comments %}
+        <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <strong>{{ comment.author.username }}</strong>
+                <span style="font-size: 0.8rem; color: var(--text-secondary);">{{ comment.created_at|timesince }} atrás</span>
+            </div>
+            <p>{{ comment.text }}</p>
+        </div>
+        {% empty %}
+        <p style="color: var(--text-secondary);">Seja o primeiro a comentar.</p>
+        {% endfor %}
+    </div>
+
+    <div style="margin-top: 2rem;">
+        <h4>Deixe seu comentário</h4>
+        <form method="post" style="margin-top: 1rem;">
+            {% csrf_token %}
+            {{ form.text }}
+            <button type="submit" class="btn-primary" style="margin-top: 1rem;">Enviar Comentário</button>
+        </form>
+    </div>
+</article>
+{% endblock %}

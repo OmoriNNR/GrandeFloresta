@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}GrandeFloresta{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="site-header">
+        <div class="logo">
+            <img src="https://via.placeholder.com/150" alt="Logotipo GrandeFloresta" class="logo-img" />
+            <div class="brand">
+                <h1>GrandeFloresta</h1>
+                <p>大森</p>
+            </div>
+        </div>
+        <nav class="main-nav">
+            <a href="{% url 'post_list' %}">Feed de Projetos</a>
+            <a href="{% url 'category_list' %}">Áreas de Atuação (Categories)</a>
+            <a href="{% url 'post_create' %}" class="btn-primary">Novo Projeto</a>
+        </nav>
+    </header>
+
+    <main class="layout">
+        <section class="feed">
+            <div class="feed-header">
+                <div class="logo-img" style="width: 32px; height: 32px;"></div>
+                <h2>Feed de Projetos</h2>
+            </div>
+            
+            <div class="feed-grid">
+                {% block content %}
+                <!-- Exemplo de Card Estático para Visualização -->
+                <article class="card">
+                    <img src="https://via.placeholder.com/80" class="card-thumb" alt="Thumbnail">
+                    <div class="card-content">
+                        <h3 class="card-title">Title de Bicicleta</h3>
+                        <div class="card-meta">
+                            <span>203.28.10.9</span>
+                            <span>Acurtle Pridoves 2024</span>
+                        </div>
+                    </div>
+                    <div class="play-icon">▶</div>
+                </article>
+
+                <article class="card">
+                    <img src="https://via.placeholder.com/80" class="card-thumb" alt="Thumbnail">
+                    <div class="card-content">
+                        <h3 class="card-title">Title De Sticleresta</h3>
+                        <div class="card-meta">
+                            <span>201.22.Rubis8 K.A8</span>
+                            <span>Seen de Projaree 2022</span>
+                        </div>
+                    </div>
+                    <div class="play-icon">▶</div>
+                </article>
+
+                <article class="card">
+                    <img src="https://via.placeholder.com/80" class="card-thumb" alt="Thumbnail">
+                    <div class="card-content">
+                        <h3 class="card-title">Eudia de Sepoda prgron</h3>
+                        <div class="card-meta">
+                            <span>202.23.30.24</span>
+                            <span>ViopSo Wtmal</span>
+                        </div>
+                    </div>
+                    <div class="play-icon">▶</div>
+                </article>
+                {% endblock %}
+            </div>
+        </section>
+
+        <aside class="sidebar">
+            {% block sidebar %}
+            <div class="sidebar-widget">
+                <h3>GrandeFloresta</h3>
+                <div class="featured-video">
+                    <img src="https://via.placeholder.com/400x225" alt="Featured">
+                    <div class="featured-play">▶</div>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.6;">
+                    Hub profissional para o mercado de Audiovisual, abrangendo Transmissão, Sonorização, Iluminação e Eventos ao Vivo.
+                </p>
+            </div>
+
+            <div class="sidebar-widget">
+                <h3>Categorias</h3>
+                <ul class="category-list">
+                    {% for cat in categories %}
+                    <li class="category-item">
+                        <div class="cat-icon">#</div>
+                        <a href="{% url 'category_detail' cat.pk %}"><span>{{ cat.name }}</span></a>
+                    </li>
+                    {% empty %}
+                    <li class="category-item"><span>Sem categorias</span></li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="sidebar-widget">
+                <h3>Comentários Recentes</h3>
+                {% for comment in recent_comments %}
+                <div style="margin-bottom: 1rem; font-size: 0.8rem; color: var(--text-secondary);">
+                    <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;">
+                        <div style="width: 20px; height: 20px; background: #3f3f46; border-radius: 50%;"></div>
+                        <strong>{{ comment.author.username }}</strong>
+                    </div>
+                    <p style="margin-left: 1.75rem;">
+                        <a href="{% url 'post_detail' comment.post.pk %}">{{ comment.text|truncatechars:50 }}</a>
+                    </p>
+                </div>
+                {% empty %}
+                <p style="font-size: 0.8rem; color: var(--text-secondary);">Nenhum comentário recente.</p>
+                {% endfor %}
+            </div>
+            {% endblock %}
+        </aside>
+    </main>
+
+    <footer class="site-footer">
+        <div class="logo">
+            <div class="logo-img" style="width: 32px; height: 32px;"></div>
+            <div class="brand">
+                <p>大森</p>
+            </div>
+        </div>
+        <div class="social-icons">
+            <span>🐦</span>
+            <span>📘</span>
+            <span>📸</span>
+        </div>
+    </footer>
+</body>
+</html>

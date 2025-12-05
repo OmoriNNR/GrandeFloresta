@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% for post in posts %}
+    <article class="card">
+        <div class="card-thumb" style="background: #3f3f46; display: grid; place-items: center; color: #fff; font-size: 1.5rem;">
+            {{ post.title|slice:":1" }}
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">
+                <a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a>
+            </h3>
+            <div class="card-meta">
+                <span>{{ post.created_at|date:"d.m.Y" }}</span>
+                <span>
+                    {% for cat in post.categories.all %}
+                        {{ cat.name }}{% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                        Sem categoria
+                    {% endfor %}
+                </span>
+            </div>
+        </div>
+        <a href="{% url 'post_detail' post.pk %}" class="play-icon">▶</a>
+    </article>
+    {% empty %}
+    <div class="card">
+        <div class="card-content">
+            <p>Nenhum projeto encontrado.</p>
+        </div>
+    </div>
+    {% endfor %}
+{% endblock %}
