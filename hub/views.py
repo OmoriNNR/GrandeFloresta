@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Post, Category, Comment
+from .forms import PostForm, CommentForm
 
-# --- VERSÃO 1: Views Funcionais SEM Forms (Validação Manual) ---
+# --- VERSÃO 2: Views Funcionais COM Forms ---
 
 def post_list(request):
     posts = Post.objects.all()
@@ -18,62 +19,46 @@ def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     comments = post.comments.all().select_related('author')
     
-    # Processamento manual do comentário (sem Form)
+    form = CommentForm()
     if request.method == 'POST' and request.user.is_authenticated:
-        text = request.POST.get('text')
-        if text:
-            Comment.objects.create(post=post, author=request.user, text=text)
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.author = request.user
+            comment.save()
             return redirect('post_detail', pk=pk)
 
     return render(request, 'hub/post_detail.html', {
         'post': post,
-        'comments': comments
+        'comments': comments,
+        'form': form
     })
 
 @login_required
 def post_create(request):
     if request.method == 'POST':
-        # Extração manual de dados
-        title = request.POST.get('title')
-        content = request.POST.get('content')
-        category_ids = request.POST.getlist('categories')
-        
-        # Criação do objeto
-        post = Post.objects.create(title=title, content=content)
-        
-        # Associação ManyToMany manual
-        if category_ids:
-            for cat_id in category_ids:
-                category = Category.objects.get(id=cat_id)
-                post.categories.add(category)
-        
-        return redirect('post_list')
+        form = PostForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('post_list')
+    else:
+        form = PostForm()
     
-    categories = Category.objects.all()
-    return render(request, 'hub/post_form.html', {'categories': categories})
+    return render(request, 'hub/post_form.html', {'form': form})
 
 @login_required
 def post_update(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    
     if request.method == 'POST':
-        post.title = request.POST.get('title')
-        post.content = request.POST.get('content')
-        post.save()
+        form = PostForm(request.POST, instance=post)
+        if form.is_valid():
+            form.save()
+            return redirect('post_list')
+    else:
+        form = PostForm(instance=post)
         
-        # Atualização ManyToMany manual
-        category_ids = request.POST.getlist('categories')
-        post.categories.clear()
-        for cat_id in category_ids:
-            post.categories.add(cat_id)
-            
-        return redirect('post_list')
-        
-    categories = Category.objects.all()
-    return render(request, 'hub/post_form.html', {
-        'post': post, # Para preencher o form manualmente no template se necessário
-        'categories': categories
-    })
+    return render(request, 'hub/post_form.html', {'form': form, 'post': post})
 
 @login_required
 def post_delete(request, pk):
