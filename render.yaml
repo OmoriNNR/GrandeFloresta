@@ -7,6 +7,7 @@ services:
     name: grande-floresta-app
     env: python
     plan: free
+    rootDir: .
     buildCommand: |
       pip install -r requirements.txt
       python manage.py collectstatic --noinput
