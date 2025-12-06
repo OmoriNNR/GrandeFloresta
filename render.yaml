@@ -1,0 +1,34 @@
+databases:
+  - name: grande-floresta-db
+    plan: free
+
+services:
+  - type: web
+    name: grande-floresta-app
+    env: python
+    plan: free
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+    startCommand: gunicorn grande_floresta.wsgi:application
+    postDeployCommand: python manage.py migrate
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: grande-floresta-app.onrender.com
+      - key: DJANGO_CSRF_TRUSTED_ORIGINS
+        value: https://grande-floresta-app.onrender.com
+      - key: DATABASE_URL
+        fromDatabase:
+          name: grande-floresta-db
+          property: connectionString
+    disk:
+      name: media-uploads
+      mountPath: /opt/render/project/src/media
+      sizeGB: 1
