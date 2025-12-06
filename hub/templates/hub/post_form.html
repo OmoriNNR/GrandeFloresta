@@ -4,25 +4,33 @@
 <div class="card" style="display: block;">
     <h2 style="margin-bottom: 1.5rem;">{% if object %}Editar{% else %}Novo{% endif %} Projeto</h2>
     
-    <form method="post">
+    <form method="post" enctype="multipart/form-data" class="post-form">
         {% csrf_token %}
-        
-        <div style="margin-bottom: 1rem;">
-            <label style="display: block; margin-bottom: 0.5rem;">Título</label>
-            <input type="text" name="title" value="{{ form.title.value|default:'' }}" required 
-                   style="width: 100%; padding: 0.75rem; background: #18181b; border: 1px solid #3f3f46; border-radius: 8px; color: white;">
-        </div>
 
-        <div style="margin-bottom: 1rem;">
-            <label style="display: block; margin-bottom: 0.5rem;">Conteúdo (HTML permitido)</label>
-            <textarea name="content" rows="10" required 
-                      style="width: 100%; padding: 0.75rem; background: #18181b; border: 1px solid #3f3f46; border-radius: 8px; color: white;">{{ form.content.value|default:'' }}</textarea>
-        </div>
+        {% if form.non_field_errors %}
+            <div class="form-feedback">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
 
-        <div style="margin-bottom: 1.5rem;">
-            <label style="display: block; margin-bottom: 0.5rem;">Categorias</label>
-            {{ form.categories }}
-        </div>
+        {% for field in form %}
+            <div class="input-group{% if field.errors %} has-error{% endif %}">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.help_text %}
+                    <small class="help-text">{{ field.help_text|safe }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                    <span class="field-error">{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: -0.5rem;">
+            Upload opcional de imagem ou vídeo (JPG, PNG, GIF, MP4, MOV, WEBM) para destacar o projeto no feed.
+        </p>
 
         <button type="submit" class="btn-primary">Salvar Projeto</button>
         <a href="{% url 'post_list' %}" style="margin-left: 1rem; color: var(--text-secondary);">Cancelar</a>

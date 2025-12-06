@@ -2,10 +2,24 @@
 
 {% block content %}
     {% for post in posts %}
-    <article class="card">
-        <div class="card-thumb" style="background: #3f3f46; display: grid; place-items: center; color: #fff; font-size: 1.5rem;">
-            {{ post.title|slice:":1" }}
-        </div>
+    <article class="card post-card">
+        <a href="{% url 'post_detail' post.pk %}" class="post-card-media" aria-label="Abrir {{ post.title }}">
+            {% if post.media %}
+                {% if post.has_video %}
+                    <video muted loop playsinline preload="metadata">
+                        <source src="{{ post.media.url }}">
+                    </video>
+                {% elif post.has_image %}
+                    <img src="{{ post.media.url }}" alt="{{ post.title }}">
+                {% else %}
+                    <div class="media-fallback">Mídia</div>
+                {% endif %}
+            {% else %}
+                <div class="media-fallback">
+                    {{ post.title|slice:":1" }}
+                </div>
+            {% endif %}
+        </a>
         <div class="card-content">
             <h3 class="card-title">
                 <a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a>

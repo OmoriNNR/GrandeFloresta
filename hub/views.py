@@ -4,7 +4,7 @@ from django.views.generic.edit import FormMixin
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Post, Category, Comment
-from .forms import CommentForm
+from .forms import CommentForm, SignUpForm, PostForm
 
 # Create your views here.
 
@@ -55,13 +55,13 @@ class PostDetailView(FormMixin, DetailView):
 
 class PostCreateView(CreateView):
     model = Post
-    fields = ['title', 'content', 'categories']
+    form_class = PostForm
     template_name = 'hub/post_form.html'
     success_url = reverse_lazy('post_list')
 
 class PostUpdateView(UpdateView):
     model = Post
-    fields = ['title', 'content', 'categories']
+    form_class = PostForm
     template_name = 'hub/post_form.html'
     success_url = reverse_lazy('post_list')
 
@@ -79,3 +79,8 @@ class CategoryDetailView(DetailView):
     model = Category
     template_name = 'hub/category_detail.html'
     context_object_name = 'category'
+
+class SignUpView(CreateView):
+    form_class = SignUpForm
+    success_url = reverse_lazy('login')
+    template_name = 'registration/signup.html'

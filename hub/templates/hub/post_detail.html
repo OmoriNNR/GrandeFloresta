@@ -15,6 +15,23 @@
         </div>
     </div>
 
+    {% if post.media %}
+    <div class="post-media-hero">
+        {% if post.has_video %}
+            <video controls preload="metadata">
+                <source src="{{ post.media.url }}">
+                Seu navegador não suporta o player de vídeo.
+            </video>
+        {% elif post.has_image %}
+            <img src="{{ post.media.url }}" alt="{{ post.title }}">
+        {% else %}
+            <a href="{{ post.media.url }}" target="_blank" rel="noopener" class="download-chip">
+                Abrir mídia do projeto
+            </a>
+        {% endif %}
+    </div>
+    {% endif %}
+
     <div style="line-height: 1.8; color: var(--text-secondary); margin-bottom: 2rem;">
         {{ post.content|safe }}
     </div>
@@ -28,26 +45,74 @@
 
     <h3>Comentários ({{ comments.count }})</h3>
     
-    <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+    <div class="comment-list">
         {% for comment in comments %}
-        <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                <strong>{{ comment.author.username }}</strong>
-                <span style="font-size: 0.8rem; color: var(--text-secondary);">{{ comment.created_at|timesince }} atrás</span>
+        <div class="comment-card">
+            <div class="comment-card__header">
+                <div>
+                    <strong>{{ comment.author.username }}</strong>
+                    <p>@{{ comment.author.username }} • {{ comment.created_at|timesince }} atrás</p>
+                </div>
+                <span class="comment-timestamp">{{ comment.created_at|date:"d/m H:i" }}</span>
             </div>
-            <p>{{ comment.text }}</p>
+            <p class="comment-text">{{ comment.text|linebreaksbr }}</p>
+            {% if comment.media %}
+                <div class="comment-media">
+                    {% if comment.has_video %}
+                        <video controls preload="metadata">
+                            <source src="{{ comment.media.url }}">
+                            Seu navegador não suporta o player de vídeo.
+                        </video>
+                    {% elif comment.has_image %}
+                        <img src="{{ comment.media.url }}" alt="Comentário de {{ comment.author.username }}">
+                    {% else %}
+                        <a href="{{ comment.media.url }}" target="_blank" rel="noopener" class="download-chip">
+                            Abrir mídia enviada
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
         {% empty %}
         <p style="color: var(--text-secondary);">Seja o primeiro a comentar.</p>
         {% endfor %}
     </div>
 
-    <div style="margin-top: 2rem;">
+    <div class="comment-form-wrapper">
         <h4>Deixe seu comentário</h4>
-        <form method="post" style="margin-top: 1rem;">
+        <form method="post" enctype="multipart/form-data" class="comment-form">
             {% csrf_token %}
-            {{ form.text }}
-            <button type="submit" class="btn-primary" style="margin-top: 1rem;">Enviar Comentário</button>
+
+            {% if form.non_field_errors %}
+                <div class="form-feedback">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="input-group">
+                {{ form.text.label_tag }}
+                {{ form.text }}
+                {% for error in form.text.errors %}
+                    <span class="field-error">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="media-upload-field">
+                {% with media_field=form.media %}
+                    <label class="media-upload-label">
+                        {{ media_field.label }}
+                    </label>
+                    {{ media_field }}
+                    <small>Suporta JPG, PNG, GIF, MP4, MOV, WEBM (até 25 MB).</small>
+                    {% for error in media_field.errors %}
+                        <span class="field-error">{{ error }}</span>
+                    {% endfor %}
+                {% endwith %}
+            </div>
+
+            <button type="submit" class="btn-primary" style="margin-top: 1rem;">Publicar</button>
         </form>
     </div>
 </article>

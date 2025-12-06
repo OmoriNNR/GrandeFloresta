@@ -21,8 +21,19 @@
         </div>
         <nav class="main-nav">
             <a href="{% url 'post_list' %}">Feed de Projetos</a>
-            <a href="{% url 'category_list' %}">Áreas de Atuação (Categories)</a>
-            <a href="{% url 'post_create' %}" class="btn-primary">Novo Projeto</a>
+            <a href="{% url 'category_list' %}">Áreas de Atuação</a>
+            
+            {% if user.is_authenticated %}
+                <span style="color: var(--text-secondary);">Olá, {{ user.username }}</span>
+                <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font: inherit;">Sair</button>
+                </form>
+                <a href="{% url 'post_create' %}" class="btn-primary">Novo Projeto</a>
+            {% else %}
+                <a href="{% url 'login' %}">Entrar</a>
+                <a href="{% url 'signup' %}" class="btn-primary">Cadastrar</a>
+            {% endif %}
         </nav>
     </header>
 

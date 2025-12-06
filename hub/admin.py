@@ -14,5 +14,9 @@ class PostAdmin(admin.ModelAdmin):
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('author', 'post', 'created_at')
+    list_display = ('author', 'post', 'created_at', 'has_media')
     list_filter = ('created_at',)
+
+    @admin.display(boolean=True, description='Mídia?')
+    def has_media(self, obj):
+        return bool(obj.media)

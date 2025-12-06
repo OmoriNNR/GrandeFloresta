@@ -28,5 +28,9 @@
         <button type="submit" class="btn-primary" style="width: 100%;">Entrar</button>
         <input type="hidden" name="next" value="{{ next }}">
     </form>
+
+    <p style="text-align: center; margin-top: 1.5rem; color: var(--text-secondary);">
+        Não tem uma conta? <a href="{% url 'signup' %}" style="color: var(--accent);">Cadastre-se</a>
+    </p>
 </div>
 {% endblock %}

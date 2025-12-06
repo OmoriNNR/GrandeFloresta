@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Criar conta · GrandeFloresta{% endblock %}
+
+{% block content %}
+<section class="auth-wrapper">
+    <div class="auth-card">
+        <header class="auth-card-header">
+            <p class="eyebrow">Acesso interno</p>
+            <h1>Crie sua credencial</h1>
+            <p>Tenha acesso à curadoria de projetos, categorias especializadas e relatórios da GrandeFloresta.</p>
+        </header>
+
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="form-feedback">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+                <div class="input-group{% if field.errors %} has-error{% endif %}">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small class="help-text">{{ field.help_text|safe }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <span class="field-error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn-primary full-width">Criar conta</button>
+        </form>
+
+        <footer class="auth-card-footer">
+            <p>Já tem acesso? <a href="{% url 'login' %}">Entre com suas credenciais</a></p>
+            <ul>
+                <li>Cadastro gratuito e imediato</li>
+                <li>Controle completo dos seus projetos</li>
+                <li>Curadoria para audiovisual e eventos</li>
+            </ul>
+        </footer>
+    </div>
+</section>
+{% endblock %}
